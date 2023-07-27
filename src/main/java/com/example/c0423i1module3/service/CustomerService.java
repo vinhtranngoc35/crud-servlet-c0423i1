@@ -14,10 +14,10 @@ public class CustomerService {
     private static CustomerService customerService;
 
     static {
-        customerList.add(new Customer(1L,2,"tuan","0342", EGender.MALE));
-        customerList.add(new Customer(2L,2,"tuan","0342", EGender.MALE));
-        customerList.add(new Customer(3L,2,"tuan","0342", EGender.MALE));
-        customerList.add(new Customer(4L,2,"tuan","0342", EGender.MALE));
+//        customerList.add(new Customer(1L,2,"tuan","0342", EGender.MALE));
+//        customerList.add(new Customer(2L,2,"tuan","0342", EGender.MALE));
+//        customerList.add(new Customer(3L,2,"tuan","0342", EGender.MALE));
+//        customerList.add(new Customer(4L,2,"tuan","0342", EGender.MALE));
     }
 
     public List<Customer> findAll(){

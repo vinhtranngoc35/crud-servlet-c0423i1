@@ -10,7 +10,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.List;
-
+                        //urlPattern số nhiều.
 @WebServlet(urlPatterns = "/customers", name = "customerController")
 public class CustomerController extends HttpServlet {
 
