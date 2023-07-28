@@ -1,7 +1,9 @@
 package com.example.c0423i1module3.controller;
 
+import com.example.c0423i1module3.model.User;
 import com.example.c0423i1module3.service.UserService;
 import com.example.c0423i1module3.util.AppConstant;
+import com.example.c0423i1module3.util.AppUtil;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -34,10 +36,16 @@ public class UserController extends HttpServlet {
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         String action = req.getParameter(AppConstant.ACTION);
         if (Objects.equals(action, AppConstant.CREATE)) {
-            showCreate(req, resp);
+            create(req, resp);
             return;
         }
         showList(req, resp);
+    }
+
+    private void create(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        User user = (User) AppUtil.getObject(req, User.class);
+        UserService.getUserService().create(user);
+        resp.sendRedirect("/users?message=Created");
     }
 
     private void showList(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
@@ -46,6 +54,7 @@ public class UserController extends HttpServlet {
     }
 
     private void showCreate(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+
         req.setAttribute("users", UserService.getUserService().getUsers());
         req.getRequestDispatcher(PAGE + AppConstant.CREATE_PAGE).forward(req,resp);
     }

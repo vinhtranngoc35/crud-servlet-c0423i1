@@ -31,9 +31,9 @@
             <input name="avatar" type="text" value="${user.avatar}">
         </div>
         <div>
-            <select>
-                <option value="${user.gender}">MALE</option>
-                <option value="${user.gender}">FEMALE</option>
+            <select name="gender">
+                <option value="MALE">MALE</option>
+                <option value="FEMALE">FEMALE</option>
             </select>
         </div>
         <div>

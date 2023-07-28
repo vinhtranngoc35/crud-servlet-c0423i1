@@ -9,8 +9,8 @@ import lombok.NoArgsConstructor;
 import java.sql.Date;
 
 @Data // Tạo dùm mình Getter và Setter
-@AllArgsConstructor // constructor đầy đủ tham số
-@NoArgsConstructor // constructor không có tham số
+ // constructor đầy đủ tham số
+// @NoArgsConstructor // constructor không có tham số
 @Builder
 public class User {
     private Long id;
@@ -39,6 +39,7 @@ public class User {
         this.dob = dob;
         this.coverPicture = coverPicture;
     }
+    public User(){}
 
     public Long getId() {
         return id;
