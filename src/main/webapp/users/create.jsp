@@ -1,4 +1,4 @@
-<%--
+<%@ page import="com.example.c0423i1module3.model.User" %><%--
   Created by IntelliJ IDEA.
   User: DELL
   Date: 7/27/2023
@@ -10,42 +10,72 @@
 <html>
 <head>
     <title>Title</title>
+    <link href="../style.css" rel="stylesheet" />
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.0/jquery.min.js" integrity="sha512-3gJwYpMe3QewGELv8k/BX9vcqhryRdzRMxVfq6ngyWXwo03GFEzjsUm8Q7RZcHPHksttq7/GFoxjCVUjkjvPdw==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js" integrity="sha512-VEd+nq25CkR676O+pLBnDW09R7VQX9Mdiij052gVCp5yVH3jGtH70Ho/UUv4mJDsEdTvqRCFZg0NKGiojGnUCw==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.css" integrity="sha512-3pIirOrwegjM6erE5gPSwkUzO+3cTjpnV9lexlNZqvupR64iZBnOOTiiLPb9M36zpMScbmUNIcHUqKD47M719g==" crossorigin="anonymous" referrerpolicy="no-referrer" />
 </head>
 <body>
     <h1>Create</h1>
-    <form method="post" action="/users?action=create">
-        <div>
-            <label>nhap ten</label>
-            <input name="name" type="text" value="${user.name}">
-        </div>
-        <div>
-            <label>nhap so dien thoai</label>
-            <input name="phone" type="text" value="${user.phone}">
-        </div>
-        <div>
-            <label>nhap email</label>
-            <input name="email" type="email" value="${user.email}">
-        </div>
-        <div>
-            <label>nhap avatar</label>
-            <input name="avatar" type="text" value="${user.avatar}">
-        </div>
-        <div>
-            <select name="gender">
-                <option value="MALE">MALE</option>
-                <option value="FEMALE">FEMALE</option>
-            </select>
-        </div>
-        <div>
-            <label>nhap ngay sinh</label>
-            <input name="dob" type="date" value="${user.dob}">
-        </div>
-        <div>
-            <label>nhap coverpicture</label>
-            <input name="coverPicture" type="text" value="${user.coverPicture}">
-        </div>
-        <button type="submit">Tao user</button>
-        <button type="button">quay lai</button>
+    <form method="post"
+            <c:if test = "${user.id == null}"> action="/users?action=create" </c:if>
+            <c:if test = "${user.id != null}"> action="/users?action=edit" </c:if>
+    >
+        <div id="formBody"></div>
+        <button class="btn btn-primary" type="submit">
+            <c:if test = "${user.id != null}"> Edit User </c:if>
+            <c:if test = "${user.id == null}"> Create User </c:if>
+        </button>
+        <a href="/users" class="btn btn-secondary">Back</a>
     </form>
+    <script src="../base.js" ></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js" integrity="sha384-IQsoLXl5PILFhosVNubq5LC7Qb9DXgDA9i+tQ8Zj3iwWAwPtgFTxbJ8NT4GN1R8p" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.min.js" integrity="sha384-cVKIPhGWiC2Al4u+LWgxfKTRIcfu0JTxR+EQDz/bgldoEyl4H0zUF0QKbrJ0EcQF" crossorigin="anonymous"></script>
+<%--    <% var user = (User) request.getAttribute("user"); %>--%>
+<script>
+    <%--const user =<%= user%>;--%>
+    //lấy được userở đây mấy ae tra google để
+    const inputs = [
+        {
+            label: "Name",
+            name: "name",
+            pattern: "^[A-Za-z ]{6,20}",
+            message: "Name must have minimun is 6 charaters and maximun is 20 charaters",
+            require: true,
+            value:  '',
+            classDiv: 'col-6'
+        },
+        {
+            label: "Email",
+            name: "email",
+            type: "email",
+            message: "Email invalid",
+            require: true,
+            value:  '',
+            classDiv: 'col-6'
+        },
+        {
+            label: "Gender",
+            name: "gender",
+            type: "select",
+            message: "Please choose gender",
+            options: [
+                {value: "FEMALE", name: "FEMALE"},
+                {value: "MALE", name: "MALE"}
+            ],
+            require: true
+            // options: categories.map(e => {
+            //     return {value: e.id, name: e.name}
+            // }),
+        }
+    ];
+    const formBody = document.getElementById('formBody');
+
+    inputs.forEach((props, index) => {
+        formBody.innerHTML += formInput(props, index);
+    })
+</script>
+
 </body>
 </html>

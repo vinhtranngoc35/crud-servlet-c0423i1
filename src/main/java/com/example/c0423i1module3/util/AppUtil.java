@@ -12,7 +12,7 @@ public class AppUtil {
         mapper = new ObjectMapper();
     }
     public static Object getObject(HttpServletRequest request, Class clazz) {
-        // Get all request parameter names
+        // tạo object bằng contructor không tham số.
         Object object;
         try {
             object = clazz.newInstance();
@@ -28,8 +28,10 @@ public class AppUtil {
             if(AppConstant.ACTION.equals(paramName)){
                 continue;
             }
+            System.out.println(request.getParameter(paramName));
             // Use reflection to set the parameter value to the corresponding field in the User class
             try {
+                // lấy value ra
                 String paramValue = mapper.writeValueAsString(request.getParameter(paramName));
                 Field field = clazz.getDeclaredField(paramName);
                 field.setAccessible(true); // Set accessible, as the fields may be private
@@ -37,12 +39,13 @@ public class AppUtil {
 
                 var value = mapper.readValue(paramValue,fieldType);
                 field.set(object, value);
+                //set cho tung field
                 // Add more type conversions as needed for other field types (e.g., boolean, double, etc.)
             } catch (NoSuchFieldException | IllegalAccessException | NumberFormatException e) {
                 // Handle exceptions as needed
-                e.printStackTrace();
+                System.out.println(e.getMessage());
             } catch (JsonProcessingException e) {
-                throw new RuntimeException(e);
+                System.out.println(e.getMessage());
             }
 
         }
