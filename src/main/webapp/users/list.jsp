@@ -17,7 +17,7 @@
 </head>
 <body>
 <div class="container card" style="height: 100vh">
-    <div class="toast-body" id="message">
+    <div class="toast-body d-none"  id="message">
         ${message}
     </div>
 

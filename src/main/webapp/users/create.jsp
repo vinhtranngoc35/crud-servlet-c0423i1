@@ -18,16 +18,19 @@
 </head>
 <body>
     <h1>Create</h1>
+    <h3>${message}</h3>
     <form method="post"
             <c:if test = "${user.id == null}"> action="/users?action=create" </c:if>
             <c:if test = "${user.id != null}"> action="/users?action=edit" </c:if>
     >
-        <div id="formBody"></div>
+        <div id="formBody" class="row">
+
+        </div>
         <button class="btn btn-primary" type="submit">
             <c:if test = "${user.id != null}"> Edit User </c:if>
             <c:if test = "${user.id == null}"> Create User </c:if>
         </button>
-        <a href="/users" class="btn btn-secondary">Back</a>
+        <a href="/users" class="btn btn-secondary" onclick="console.log(${user.toString()})">Back</a>
     </form>
     <script src="../base.js" ></script>
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js" integrity="sha384-IQsoLXl5PILFhosVNubq5LC7Qb9DXgDA9i+tQ8Zj3iwWAwPtgFTxbJ8NT4GN1R8p" crossorigin="anonymous"></script>
@@ -36,6 +39,7 @@
 <script>
     <%--const user =<%= user%>;--%>
     //lấy được userở đây mấy ae tra google để
+    var user = ${userJSON};
     const inputs = [
         {
             label: "Name",
@@ -43,15 +47,21 @@
             pattern: "^[A-Za-z ]{6,20}",
             message: "Name must have minimun is 6 charaters and maximun is 20 charaters",
             require: true,
-            value:  '',
-            classDiv: 'col-6'
+            classDiv: 'col-6',
+            value: user.name || ''
+        },
+        {
+            name:'id',
+            value: user.id,
+            type: 'hidden',
+            classDiv: 'd-none'
         },
         {
             label: "Phone",
             name: "phone",
             message: "Phone must is number 10 characters",
             require: true,
-            value:  '',
+            value:  user.phone || '',
             classDiv: 'col-6'
         },
         {
@@ -60,7 +70,7 @@
             type: "email",
             message: "Email invalid",
             require: true,
-            value:  '',
+            value:  user.email || '',
             classDiv: 'col-6'
         },
         {
@@ -72,10 +82,9 @@
                 {value: "FEMALE", name: "FEMALE"},
                 {value: "MALE", name: "MALE"}
             ],
-            require: true
-            // options: categories.map(e => {
-            //     return {value: e.id, name: e.name}
-            // }),
+            require: true,
+            value: user.gender || '',
+            classDiv: 'col-6'
         }
     ];
     const formBody = document.getElementById('formBody');

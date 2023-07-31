@@ -6,6 +6,7 @@ import com.example.c0423i1module3.util.AppConstant;
 import com.example.c0423i1module3.util.AppUtil;
 import com.example.c0423i1module3.util.RunnableCustom;
 import com.example.c0423i1module3.util.RunnableWithRegex;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -29,6 +30,7 @@ public class UserController extends HttpServlet {
     public void init() {
         validators = new HashMap<>();
         validators.put("phone", new RunnableWithRegex("[0,9]{10}", "phone", errors, "Phone invalid"));
+        //định nghĩa tất cả các fields
     }
 
     @Override
@@ -67,13 +69,21 @@ public class UserController extends HttpServlet {
         showList(req, resp);
     }
 
-    private void create(HttpServletRequest req, HttpServletResponse resp) throws IOException {
+    private void create(HttpServletRequest req, HttpServletResponse resp) throws IOException, ServletException {
         User user = (User) AppUtil.getObjectWithValidation(req, User.class,  validators);
+        if(errors.size() > 0){
+            req.setAttribute("user", user);
+
+            req.setAttribute("message","Something was wrong");
+            req.getRequestDispatcher(PAGE + AppConstant.CREATE_PAGE)
+                    .forward(req,resp);
+        }
         UserService.getUserService().create(user);
         resp.sendRedirect("/users?message=Created");
     }
     private void edit(HttpServletRequest req, HttpServletResponse resp) throws IOException {
         User user = (User) AppUtil.getObject(req, User.class);
+
         UserService.getUserService().edit(user);
         resp.sendRedirect("/users?message=Edited");
     }
@@ -85,13 +95,17 @@ public class UserController extends HttpServlet {
     }
 
     private void showCreate(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        req.setAttribute("user", new User());
+        var user = new User();
+
+        req.setAttribute("user", user);
+        req.setAttribute("userJSON", new ObjectMapper().writeValueAsString(user));
         req.getRequestDispatcher(PAGE + AppConstant.CREATE_PAGE)
                 .forward(req,resp);
     }
     private void showEdit(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         Long id = Long.valueOf(req.getParameter("id"));
         req.setAttribute("user", UserService.getUserService().findById(id));
+        req.setAttribute("userJSON", new ObjectMapper().writeValueAsString(UserService.getUserService().findById(id)));
         req.getRequestDispatcher(PAGE + AppConstant.CREATE_PAGE)
                 .forward(req,resp);
     }

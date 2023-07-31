@@ -5,9 +5,9 @@ import lombok.Data;
 import java.util.HashMap;
 import java.util.Map;
 
-@Data
+
 public  abstract  class RunnableCustom implements Runnable  {
-     protected String  fieldName;
+    protected String  fieldName;
     protected String value ;
     protected String message;
     protected Map<String, String> errors;
