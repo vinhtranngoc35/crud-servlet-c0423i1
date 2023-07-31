@@ -47,6 +47,14 @@
             classDiv: 'col-6'
         },
         {
+            label: "Phone",
+            name: "phone",
+            message: "Phone must is number 10 characters",
+            require: true,
+            value:  '',
+            classDiv: 'col-6'
+        },
+        {
             label: "Email",
             name: "email",
             type: "email",

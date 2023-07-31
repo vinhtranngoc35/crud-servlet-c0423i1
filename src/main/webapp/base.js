@@ -3,13 +3,18 @@ function formInput(props, index) {
     if (props.type === 'select') {
         return formSelect(props, index)
     }
+    let pattern = '';
+    if(props.pattern){
+        pattern = 'pattern="' + props.pattern + '"';
+    }
+    console.log(pattern);
     return `<div class="${props.classDiv}">
                 <label>${props.label}</label>
                     <input class="input-custom form-control"
                     type="${props.type || 'text'}"
                     name="${props.name}"
-                    onblur="onFocus(${index})"
-                    "${props.pattern ? 'pattern=' + props.pattern : ''}"
+                    onblur="onFocus(${index})" 
+                    ${pattern}
                     value="${props.value}"
                     ${props.require ? 'required' : ''} /></br>
                 <span class="error">${props.message}</span>

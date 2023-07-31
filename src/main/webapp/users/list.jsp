@@ -22,7 +22,9 @@
     </div>
 
     <h1>User</h1>
-    <a class="btn btn-primary" href="/users?action=create"> Create</a>
+    <div class="col-2">
+        <a class="btn btn-primary" href="${pageContext.request.contextPath}/users?action=create"> Create</a>
+    </div>
     <table class="table table-striped table-hover">
         <thead>
         <tr>

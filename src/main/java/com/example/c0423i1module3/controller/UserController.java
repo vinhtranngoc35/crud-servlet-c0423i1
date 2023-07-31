@@ -1,10 +1,11 @@
 package com.example.c0423i1module3.controller;
 
 import com.example.c0423i1module3.model.User;
-import com.example.c0423i1module3.service.CustomerService;
 import com.example.c0423i1module3.service.UserService;
 import com.example.c0423i1module3.util.AppConstant;
 import com.example.c0423i1module3.util.AppUtil;
+import com.example.c0423i1module3.util.RunnableCustom;
+import com.example.c0423i1module3.util.RunnableWithRegex;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -12,14 +13,28 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Objects;
 
 @WebServlet(urlPatterns = "/users", name = "userController")
 public class UserController extends HttpServlet {
     private final String PAGE = "users";
+
+    private Map<String, RunnableCustom> validators;
+
+    private final Map<String, String> errors = new HashMap<>();
+
+    @Override
+    public void init() {
+        validators = new HashMap<>();
+        validators.put("phone", new RunnableWithRegex("[0,9]{10}", "phone", errors, "Phone invalid"));
+    }
+
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         String action = req.getParameter(AppConstant.ACTION);
+
         if(Objects.equals(action, AppConstant.EDIT)){
             showEdit(req,resp);
             return;
@@ -32,7 +47,6 @@ public class UserController extends HttpServlet {
             delete(req, resp);
             return;
         }
-
         showList(req, resp);
 
 
@@ -40,6 +54,7 @@ public class UserController extends HttpServlet {
 
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        errors.clear();
         String action = req.getParameter(AppConstant.ACTION);
         if (Objects.equals(action, AppConstant.CREATE)) {
             create(req, resp);
@@ -52,12 +67,12 @@ public class UserController extends HttpServlet {
         showList(req, resp);
     }
 
-    private void create(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        User user = (User) AppUtil.getObject(req, User.class);
+    private void create(HttpServletRequest req, HttpServletResponse resp) throws IOException {
+        User user = (User) AppUtil.getObjectWithValidation(req, User.class,  validators);
         UserService.getUserService().create(user);
         resp.sendRedirect("/users?message=Created");
     }
-    private void edit(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+    private void edit(HttpServletRequest req, HttpServletResponse resp) throws IOException {
         User user = (User) AppUtil.getObject(req, User.class);
         UserService.getUserService().edit(user);
         resp.sendRedirect("/users?message=Edited");
