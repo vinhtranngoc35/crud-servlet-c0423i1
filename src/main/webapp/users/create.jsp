@@ -23,6 +23,7 @@
             <c:if test = "${user.id == null}"> action="/users?action=create" </c:if>
             <c:if test = "${user.id != null}"> action="/users?action=edit" </c:if>
     >
+<%--        cần phải có thằng formBody thì xài được validation js--%>
         <div id="formBody" class="row">
 
         </div>
@@ -39,6 +40,7 @@
 <script>
     <%--const user =<%= user%>;--%>
     //lấy được userở đây mấy ae tra google để
+    // lấy data user từ controller
     var user = ${userJSON};
     const inputs = [
         {
@@ -62,6 +64,7 @@
             message: "Phone must is number 10 characters",
             require: true,
             value:  user.phone || '',
+            pattern: "^[0-9]{10}",
             classDiv: 'col-6'
         },
         {
@@ -69,6 +72,7 @@
             name: "email",
             type: "email",
             message: "Email invalid",
+            disable: user.email,
             require: true,
             value:  user.email || '',
             classDiv: 'col-6'
@@ -87,9 +91,13 @@
             classDiv: 'col-6'
         }
     ];
-    const formBody = document.getElementById('formBody');
+    // phải có những dòng dưới này
 
+    const formBody = document.getElementById('formBody'); // DOM formBody theo id
+
+    // loop qua inputs
     inputs.forEach((props, index) => {
+        // vẽ từng ô input
         formBody.innerHTML += formInput(props, index);
     })
 </script>

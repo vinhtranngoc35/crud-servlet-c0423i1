@@ -5,3 +5,6 @@
 .input-custom:invalid[focused="true"]~span {
     display: block;
 }
+.input-custom:invalid[focused="true"] {
+    border-color: red !important;
+}

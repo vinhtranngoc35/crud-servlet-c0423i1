@@ -1,13 +1,16 @@
 function formInput(props, index) {
 
     if (props.type === 'select') {
-        return formSelect(props, index)
+        return formSelect(props, index);
     }
     let pattern = '';
     if(props.pattern){
         pattern = 'pattern="' + props.pattern + '"';
     }
-    console.log(pattern);
+    let disable = '';
+    if(props.disable){
+        disable = 'disabled';
+    }
     return `<div class="${props.classDiv}">
                 <label>${props.label}</label>
                     <input class="input-custom form-control"
@@ -15,6 +18,7 @@ function formInput(props, index) {
                     name="${props.name}"
                     onblur="onFocus(${index})" 
                     ${pattern}
+                    ${disable}
                     value="${props.value}"
                     ${props.require ? 'required' : ''} /></br>
                 <span class="error">${props.message}</span>
