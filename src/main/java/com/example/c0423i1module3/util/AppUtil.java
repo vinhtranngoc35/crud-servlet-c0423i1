@@ -76,7 +76,7 @@ public class AppUtil {
                 String paramValue = mapper.writeValueAsString(request.getParameter(paramName));
                 RunnableCustom validator = validators.get(paramName);
                 if(validator != null){
-                    validator.setValue(paramValue);
+                    validator.setValue(request.getParameter(paramName));
                     validator.run();
                 }
                 Field field = clazz.getDeclaredField(paramName);

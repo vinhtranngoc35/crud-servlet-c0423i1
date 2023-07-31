@@ -29,7 +29,7 @@ public class UserController extends HttpServlet {
     @Override
     public void init() {
         validators = new HashMap<>();
-        validators.put("phone", new RunnableWithRegex("[0,9]{10}", "phone", errors, "Phone invalid"));
+        validators.put("phone", new RunnableWithRegex("[0-9]{10}", "phone", errors, "Phone invalid"));
         //định nghĩa tất cả các fields
     }
 
@@ -73,7 +73,7 @@ public class UserController extends HttpServlet {
         User user = (User) AppUtil.getObjectWithValidation(req, User.class,  validators);
         if(errors.size() > 0){
             req.setAttribute("user", user);
-
+            req.setAttribute("userJSON", new ObjectMapper().writeValueAsString(user));
             req.setAttribute("message","Something was wrong");
             req.getRequestDispatcher(PAGE + AppConstant.CREATE_PAGE)
                     .forward(req,resp);
