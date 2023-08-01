@@ -42,6 +42,7 @@
     //lấy được userở đây mấy ae tra google để
     // lấy data user từ controller
     var user = ${userJSON};
+    const genders = ${genderJSON};
     const inputs = [
         {
             label: "Name",
@@ -78,14 +79,24 @@
             classDiv: 'col-6'
         },
         {
+            label: "Date of Birth",
+            name: "dob",
+            type: "date",
+            require: true,
+            value:  user.dob || '',
+            classDiv: 'col-6'
+        },
+        {
             label: "Gender",
             name: "gender",
             type: "select",
             message: "Please choose gender",
-            options: [
-                {value: "FEMALE", name: "FEMALE"},
-                {value: "MALE", name: "MALE"}
-            ],
+            options: genders?.map(e=> {
+                return {
+                    name: e,
+                    value: e
+                }
+            }),
             require: true,
             value: user.gender || '',
             classDiv: 'col-6'

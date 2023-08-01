@@ -13,4 +13,6 @@ public class AppConstant {
     public static String CREATE_PAGE= "/create.jsp";
 
     public static String ID_NOT_FOUND = "Id of %s not found";
+
+    public static String MESSAGE_EDIT_SUCCESS = "Edited";
 }

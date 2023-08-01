@@ -89,8 +89,9 @@ public class User {
         this.gender = gender;
     }
 
-    public Date getDob() {
-        return dob;
+    public String getDob() {
+        if(dob == null) return "";
+        return dob.toString();
     }
 
     public void setDob(Date dob) {

@@ -33,12 +33,20 @@ function formSelect(props, index) {
             optionsStr += `<option value="${e.value}" >${e.name}</option>`;
         }
     })
-
+    const optionSelected = props.options.find(e => e.value === props.value);
+    if(props.disable){
+        optionsStr = `<option selected>${optionSelected.name}</option>`;
+    }
+    let disable = '';
+    if(props.disable){
+        disable = 'disabled';
+    }
     return `<div class="${props.classDiv}">
                 <label>${props.label}</label>
                     <select class="input-custom form-control"
                     type="${props.type || 'text'}" name="${props.name}"
                     onblur="onFocus(${index})"
+                    ${disable}
                     value="${props.value}"
                     ${props.require ? 'required' : ''}>
                         <option value>---Choose---</option>

@@ -1,5 +1,6 @@
 package com.example.c0423i1module3.service;
 
+import com.example.c0423i1module3.dao.UserDAO;
 import com.example.c0423i1module3.model.User;
 import com.example.c0423i1module3.model.enums.EGender;
 import com.example.c0423i1module3.util.AppConstant;
@@ -18,6 +19,8 @@ public class UserService {
 
     private static final UserService userService;
 
+    private UserDAO userDAO = new UserDAO();
+
     static {
         users = new ArrayList<>();
         users.add(new User(++currentId, "Vinh", "Vinh2","Vinh3","Vinh4", EGender.MALE,  Date.valueOf("1994-07-29"), "Demo"));
@@ -28,19 +31,20 @@ public class UserService {
     }
 
     public List<User> getUsers(){
-        return users;
+        return userDAO.findAll();
     }
     public User findById(Long id){
-
-        return users.stream()
-                .filter(user -> Objects.equals(user.getId(), id)) // lọc qua list users với điều kiện là user id == id truyền vào
-                .findFirst() // lấy phần tử tìm thấy đầu tiên
+        return userDAO.findById(id)
                 .orElseThrow(() ->  new RuntimeException(String.format(AppConstant.ID_NOT_FOUND, "User")));
-            //nếu không tìm thấy thì trả ra lỗi
+
+//        return users.stream()
+//                .filter(user -> Objects.equals(user.getId(), id)) // lọc qua list users với điều kiện là user id == id truyền vào
+//                .findFirst() // lấy phần tử tìm thấy đầu tiên
+//                .orElseThrow(() ->  new RuntimeException(String.format(AppConstant.ID_NOT_FOUND, "User")));
+//            //nếu không tìm thấy thì trả ra lỗi
     }
     public void create(User user){
-        user.setId(++currentId);
-        users.add(user);
+        userDAO.insertUser(user);
     }
 
     public static UserService getUserService() {
@@ -49,31 +53,18 @@ public class UserService {
     private UserService(){}
 
     public void edit(User user) {
-        for (var item : users){
-            if(item.getId().equals(user.getId())){
-                item.setAvatar(user.getAvatar());
-                item.setDob(user.getDob());
-                item.setGender(user.getGender());
-                item.setPhone(user.getPhone());
-                item.setName(user.getName());
-                item.setCoverPicture(user.getCoverPicture());
-            }
-        }
+        userDAO.updateUser(user);
     }
 
     public boolean existById(Long id) {
-        for (var user : users){
-            if(Objects.equals(id, user.getId())){
-                return true;
-            }
-        }
-        return false;
+        return userDAO.findById(id).orElse(null) != null;
     }
 
     public void delete(Long userId) {
-        users = users
-                .stream()
-                .filter(user -> !Objects.equals(user.getId(), userId))
-                .collect(Collectors.toList());
+        userDAO.deleteById(userId);
+//        users = users
+//                .stream()
+//                .filter(user -> !Objects.equals(user.getId(), userId))
+//                .collect(Collectors.toList());
     }
 }

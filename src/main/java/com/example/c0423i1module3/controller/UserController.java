@@ -1,6 +1,7 @@
 package com.example.c0423i1module3.controller;
 
 import com.example.c0423i1module3.model.User;
+import com.example.c0423i1module3.model.enums.EGender;
 import com.example.c0423i1module3.service.UserService;
 import com.example.c0423i1module3.util.AppConstant;
 import com.example.c0423i1module3.util.AppUtil;
@@ -33,7 +34,7 @@ public class UserController extends HttpServlet {
         // tạo tất các validator cho all fields.
         // mình có thế xài cái thằng khác
         validators.put("phone", new RunnableWithRegex("[0-9]{10}", "phone", errors));
-        validators.put("dob", new RunnableWithRegex("[0-9]{10}", "dob", errors));
+        //validators.put("dob", new RunnableWithRegex("[0-9]{10}", "dob", errors));
         //định nghĩa tất cả các fields
     }
 
@@ -99,17 +100,19 @@ public class UserController extends HttpServlet {
 
     private void showCreate(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         req.setAttribute("userJSON", new ObjectMapper().writeValueAsString(new User())); // gửi qua user rỗng để JS vẻ lên trang web
+        req.setAttribute("genderJSON", new ObjectMapper().writeValueAsString(EGender.values()));
         req.getRequestDispatcher(PAGE + AppConstant.CREATE_PAGE)
                 .forward(req,resp);
     }
     private void showEdit(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         Long id = Long.valueOf(req.getParameter("id"));
         if(checkIdNotFound(req, resp, id)) return;
-
+        req.setAttribute("genderJSON", new ObjectMapper().writeValueAsString(EGender.values()));
         req.setAttribute("user", UserService.getUserService().findById(id)); // gửi user để jsp check xem edit hay là create User
         req.setAttribute("userJSON", new ObjectMapper().writeValueAsString(UserService.getUserService().findById(id))); // gửi qua user được tìm thấy bằng id để JS vẻ lên trang web
         req.getRequestDispatcher(PAGE + AppConstant.CREATE_PAGE)
                 .forward(req,resp);
+
     }
     private void delete(HttpServletRequest req, HttpServletResponse resp) throws IOException {
         Long id = Long.valueOf(req.getParameter("id"));
@@ -120,6 +123,7 @@ public class UserController extends HttpServlet {
 
     private User getValidUser(HttpServletRequest req, HttpServletResponse resp) throws IOException, ServletException {
         User user = (User) AppUtil.getObjectWithValidation(req, User.class,  validators); //
+
         if(errors.size() > 0){
             req.setAttribute("userJSON", new ObjectMapper().writeValueAsString(user)); //hiểu dòng đơn giản là muốn gửi data qua JS thì phải xài thằng này  new ObjectMapper().writeValueAsString(user).
             req.setAttribute("message","Something was wrong");
