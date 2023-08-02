@@ -27,7 +27,7 @@ function formInput(props, index) {
 function formSelect(props, index) {
     let optionsStr = "";
     props.options.forEach(e => {
-        if(props.value === e.name){
+        if(props.value === e.value){
             optionsStr += `<option value="${e.value}" selected>${e.name}</option>`;
         }else {
             optionsStr += `<option value="${e.value}" >${e.name}</option>`;

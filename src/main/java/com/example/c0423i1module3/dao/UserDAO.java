@@ -1,5 +1,6 @@
 package com.example.c0423i1module3.dao;
 
+import com.example.c0423i1module3.model.Role;
 import com.example.c0423i1module3.model.User;
 import com.example.c0423i1module3.model.enums.EGender;
 
@@ -9,12 +10,14 @@ import java.util.List;
 import java.util.Optional;
 
 public class UserDAO extends DatabaseConnection {
-    private final String SELECT_ALL_USERS = "SELECT * FROM `users`";
-    private final String UPDATE_USER = "UPDATE `users` SET `name` = ?, `phone` = ?, `avatar` = ?, `gender` = ?, `dob` = ?, `cover_picture` = ? WHERE (`id` = ?);";
+    private final String SELECT_ALL_USERS = "SELECT u.*,r.name role_name  FROM `users` u LEFT JOIN " +
+            "`roles` r on u.role_id = r.id";
+    private final String UPDATE_USER = "UPDATE `users` SET `name` = ?, `phone` = ?, `avatar` = ?, `gender` = ?, `dob` = ?, `cover_picture` = ?, `role_id` = ? WHERE (`id` = ?);";
 
-    private final String INSERT_USERS = "INSERT INTO `users` (`name`, `phone`, `email`, `avatar`, `gender`, `dob`, `cover_picture`) \n" +
-            "VALUES (?, ?, ?, ?, ?, ?, ?)";
-    private final String FIND_BY_ID = "SELECT * FROM `users` WHERE `id` = ?"; // show Edit
+    private final String INSERT_USERS = "INSERT INTO `users` (`name`, `phone`, `email`, `avatar`, `gender`, `dob`, `cover_picture`, `role_id`) \n" +
+            "VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+    private final String FIND_BY_ID = "SELECT u.*,r.name role_name  FROM " +
+            "`users` u LEFT JOIN `roles` r on u.role_id = r.id WHERE u.`id` = ?"; // show Edit
 
     private final String DELETE_BY_ID = "DELETE FROM `users` WHERE (`id` = ?)";
 
@@ -53,6 +56,7 @@ public class UserDAO extends DatabaseConnection {
             preparedStatement.setString(5,user.getGender().toString());
             preparedStatement.setString(6,user.getDob());
             preparedStatement.setString(7,user.getCoverPicture());
+            preparedStatement.setLong(8, user.getRole().getId());
             preparedStatement.executeUpdate();
         } catch (SQLException e) {
             throw new RuntimeException(e);
@@ -72,7 +76,9 @@ public class UserDAO extends DatabaseConnection {
             preparedStatement.setString(4,user.getGender().toString());
             preparedStatement.setString(5,user.getDob());
             preparedStatement.setString(6,user.getCoverPicture());
-            preparedStatement.setLong(7,user.getId());
+            preparedStatement.setLong(7, user.getRole().getId());
+            preparedStatement.setLong(8,user.getId());
+
             preparedStatement.executeUpdate();
         } catch (SQLException e) {
             throw new RuntimeException(e);
@@ -95,7 +101,7 @@ public class UserDAO extends DatabaseConnection {
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
-        return null;
+        return Optional.empty();
     }
 
     public void deleteById(Long id) {
@@ -123,6 +129,9 @@ public class UserDAO extends DatabaseConnection {
         String dob = rs.getString("dob");
         String coverPicture = rs.getString("cover_picture");
         String gender = rs.getString("gender");
-        return new User(id, name, phone,email, avatar, EGender.valueOf(gender), Date.valueOf(dob), coverPicture);
+        String roleName = rs.getString("role_name");
+        Long roleId = rs.getLong("role_id");
+        Role role = new Role(roleId, roleName);
+        return new User(id, name, phone,email, avatar, EGender.valueOf(gender), Date.valueOf(dob), coverPicture, role);
     }
 }

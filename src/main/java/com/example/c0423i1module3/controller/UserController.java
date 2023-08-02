@@ -1,7 +1,9 @@
 package com.example.c0423i1module3.controller;
 
+import com.example.c0423i1module3.model.Role;
 import com.example.c0423i1module3.model.User;
 import com.example.c0423i1module3.model.enums.EGender;
+import com.example.c0423i1module3.service.RoleService;
 import com.example.c0423i1module3.service.UserService;
 import com.example.c0423i1module3.util.AppConstant;
 import com.example.c0423i1module3.util.AppUtil;
@@ -94,13 +96,17 @@ public class UserController extends HttpServlet {
 
     private void showList(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         req.setAttribute("users", UserService.getUserService().getUsers()); // gửi qua list users để jsp vẻ lên trang web
+        req.setAttribute("usersJSON", new ObjectMapper().writeValueAsString(UserService.getUserService().getUsers()));
         req.setAttribute("message", req.getParameter("message")); // gửi qua message để toastr show thông báo
+        req.setAttribute("genderJSON", new ObjectMapper().writeValueAsString(EGender.values()));
+        req.setAttribute("rolesJSON", new ObjectMapper().writeValueAsString(RoleService.getRoles()));
         req.getRequestDispatcher(PAGE + AppConstant.LIST_PAGE).forward(req,resp);
     }
 
     private void showCreate(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         req.setAttribute("userJSON", new ObjectMapper().writeValueAsString(new User())); // gửi qua user rỗng để JS vẻ lên trang web
         req.setAttribute("genderJSON", new ObjectMapper().writeValueAsString(EGender.values()));
+        req.setAttribute("rolesJSON", new ObjectMapper().writeValueAsString(RoleService.getRoles()));
         req.getRequestDispatcher(PAGE + AppConstant.CREATE_PAGE)
                 .forward(req,resp);
     }
@@ -110,6 +116,7 @@ public class UserController extends HttpServlet {
         req.setAttribute("genderJSON", new ObjectMapper().writeValueAsString(EGender.values()));
         req.setAttribute("user", UserService.getUserService().findById(id)); // gửi user để jsp check xem edit hay là create User
         req.setAttribute("userJSON", new ObjectMapper().writeValueAsString(UserService.getUserService().findById(id))); // gửi qua user được tìm thấy bằng id để JS vẻ lên trang web
+        req.setAttribute("rolesJSON", new ObjectMapper().writeValueAsString(RoleService.getRoles()));
         req.getRequestDispatcher(PAGE + AppConstant.CREATE_PAGE)
                 .forward(req,resp);
 
@@ -123,9 +130,11 @@ public class UserController extends HttpServlet {
 
     private User getValidUser(HttpServletRequest req, HttpServletResponse resp) throws IOException, ServletException {
         User user = (User) AppUtil.getObjectWithValidation(req, User.class,  validators); //
-
+        user.setRole(new Role(Long.valueOf(req.getParameter("role_id"))));
         if(errors.size() > 0){
             req.setAttribute("userJSON", new ObjectMapper().writeValueAsString(user)); //hiểu dòng đơn giản là muốn gửi data qua JS thì phải xài thằng này  new ObjectMapper().writeValueAsString(user).
+            req.setAttribute("rolesJSON", new ObjectMapper().writeValueAsString(RoleService.getRoles()));
+            req.setAttribute("genderJSON", new ObjectMapper().writeValueAsString(EGender.values()));
             req.setAttribute("message","Something was wrong");
             req.getRequestDispatcher(PAGE + AppConstant.CREATE_PAGE)
                     .forward(req,resp);

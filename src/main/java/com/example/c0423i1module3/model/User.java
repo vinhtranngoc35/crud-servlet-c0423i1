@@ -29,7 +29,9 @@ public class User {
 
     private String coverPicture;
 
-    public User(Long id, String name, String phone, String email, String avatar, EGender gender, Date dob, String coverPicture) {
+    private Role role;
+
+    public User(Long id, String name, String phone, String email, String avatar, EGender gender, Date dob, String coverPicture, Role role) {
         this.id = id;
         this.name = name;
         this.phone = phone;
@@ -38,6 +40,7 @@ public class User {
         this.gender = gender;
         this.dob = dob;
         this.coverPicture = coverPicture;
+        this.role = role;
     }
     public User(){}
 
@@ -104,5 +107,13 @@ public class User {
 
     public void setCoverPicture(String coverPicture) {
         this.coverPicture = coverPicture;
+    }
+
+    public Role getRole() {
+        return role;
+    }
+
+    public void setRole(Role role) {
+        this.role = role;
     }
 }
