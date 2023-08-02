@@ -5,6 +5,8 @@ import com.example.c0423i1module3.model.User;
 import com.example.c0423i1module3.model.enums.EGender;
 import com.example.c0423i1module3.service.RoleService;
 import com.example.c0423i1module3.service.UserService;
+import com.example.c0423i1module3.service.dto.PageableRequest;
+import com.example.c0423i1module3.service.dto.enums.ESortType;
 import com.example.c0423i1module3.util.AppConstant;
 import com.example.c0423i1module3.util.AppUtil;
 import com.example.c0423i1module3.util.RunnableCustom;
@@ -95,8 +97,16 @@ public class UserController extends HttpServlet {
     }
 
     private void showList(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        req.setAttribute("users", UserService.getUserService().getUsers()); // gửi qua list users để jsp vẻ lên trang web
-        req.setAttribute("usersJSON", new ObjectMapper().writeValueAsString(UserService.getUserService().getUsers()));
+
+        PageableRequest request = new PageableRequest(
+                req.getParameter("search"),
+                req.getParameter("sortField"),
+                ESortType.valueOf(AppUtil.getParameterWithDefaultValue(req,"sortType", ESortType.DESC).toString())
+        ); //tao doi tuong pageable voi parametter search
+
+        req.setAttribute("pageable", request);
+        req.setAttribute("users", UserService.getUserService().getUsers(request)); // gửi qua list users để jsp vẻ lên trang web
+        req.setAttribute("usersJSON", new ObjectMapper().writeValueAsString(UserService.getUserService().getUsers(request)));
         req.setAttribute("message", req.getParameter("message")); // gửi qua message để toastr show thông báo
         req.setAttribute("genderJSON", new ObjectMapper().writeValueAsString(EGender.values()));
         req.setAttribute("rolesJSON", new ObjectMapper().writeValueAsString(RoleService.getRoles()));

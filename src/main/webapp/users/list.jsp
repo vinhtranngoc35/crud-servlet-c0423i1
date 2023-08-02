@@ -53,12 +53,32 @@
     </div>
     </form>
     <h1>User</h1>
-    <div class="col-2">
-        <button onclick="onShowPopup()" type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal">
-            Create
-        </button>
-<%--        <a class="btn btn-primary" href="${pageContext.request.contextPath}/users?action=create"> Create</a>--%>
+    <div class="row">
+        <div class="col-2">
+            <button onclick="onShowPopup()" type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal">
+                Create
+            </button>
+            <%--        <a class="btn btn-primary" href="${pageContext.request.contextPath}/users?action=create"> Create</a>--%>
+        </div>
+        <div class="col-4">
+
+        </div>
+        <div class="col-6">
+            <form action="${pageContext.request.contextPath}/users" class="row">
+                <div class="col-10">
+                    <input type="search" name="search" value="${pageable.search}" class="form-control">
+                </div>
+
+                <div class="col-2">
+                    <button class="btn btn-primary">
+                        Search
+                    </button>
+                </div>
+            </form>
+
+        </div>
     </div>
+
     <table class="table table-striped table-hover">
         <thead>
         <tr>
@@ -66,7 +86,18 @@
                 No.
             </th>
             <th>
-                Name
+                <a
+                        <c:if test="${pageable.sortField == 'name' && pageable.sortType == 'DESC'}">
+                            href="/users?search=${pageable.search}&sortType=ASC&sortField=name"
+                        </c:if>
+
+                        <c:if test="${!(pageable.sortField == 'name' && pageable.sortType == 'DESC')}">
+                            href="/users?search=${pageable.search}&sortType=DESC&sortField=name"
+                        </c:if>
+                >
+                    Name
+                </a>
+
             </th>
             <th>
                 Phone

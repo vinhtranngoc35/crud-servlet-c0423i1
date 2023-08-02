@@ -3,6 +3,7 @@ package com.example.c0423i1module3.service;
 import com.example.c0423i1module3.dao.UserDAO;
 import com.example.c0423i1module3.model.User;
 import com.example.c0423i1module3.model.enums.EGender;
+import com.example.c0423i1module3.service.dto.PageableRequest;
 import com.example.c0423i1module3.util.AppConstant;
 
 import java.sql.Date;
@@ -30,8 +31,8 @@ public class UserService {
         userService = new UserService();
     }
 
-    public List<User> getUsers(){
-        return userDAO.findAll();
+    public List<User> getUsers(PageableRequest request){
+        return userDAO.findAll(request);
     }
     public User findById(Long id){
         return userDAO.findById(id)

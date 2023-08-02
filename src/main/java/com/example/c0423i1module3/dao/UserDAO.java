@@ -3,6 +3,8 @@ package com.example.c0423i1module3.dao;
 import com.example.c0423i1module3.model.Role;
 import com.example.c0423i1module3.model.User;
 import com.example.c0423i1module3.model.enums.EGender;
+import com.example.c0423i1module3.service.dto.PageableRequest;
+import com.example.c0423i1module3.service.dto.enums.ESortType;
 
 import java.sql.*;
 import java.util.ArrayList;
@@ -11,7 +13,7 @@ import java.util.Optional;
 
 public class UserDAO extends DatabaseConnection {
     private final String SELECT_ALL_USERS = "SELECT u.*,r.name role_name  FROM `users` u LEFT JOIN " +
-            "`roles` r on u.role_id = r.id";
+            "`roles` r on u.role_id = r.id  WHERE u.`name` like '%s' OR u.`phone` LIKE '%s' Order BY %s %s";
     private final String UPDATE_USER = "UPDATE `users` SET `name` = ?, `phone` = ?, `avatar` = ?, `gender` = ?, `dob` = ?, `cover_picture` = ?, `role_id` = ? WHERE (`id` = ?);";
 
     private final String INSERT_USERS = "INSERT INTO `users` (`name`, `phone`, `email`, `avatar`, `gender`, `dob`, `cover_picture`, `role_id`) \n" +
@@ -22,13 +24,27 @@ public class UserDAO extends DatabaseConnection {
     private final String DELETE_BY_ID = "DELETE FROM `users` WHERE (`id` = ?)";
 
 
-    public List<User> findAll() {
+    public List<User> findAll(PageableRequest request) {
         List<User> users = new ArrayList<>();
+        String search = request.getSearch();
+        if(request.getSortField() == null){
+            request.setSortField("id");
+        }
+        if(request.getSortType() == null){
+            request.setSortType(ESortType.DESC);
+        }
+        if(search == null){
+            search = "%%";
+        }else {
+            search = "%" + search + "%";
+        }
         try (Connection connection = getConnection();
 
              // Step 2: truyền câu lênh mình muốn chạy nằm ở trong này (SELECT_USERS)
              PreparedStatement preparedStatement = connection
-                     .prepareStatement(SELECT_ALL_USERS)) {
+                     .prepareStatement(String.format(SELECT_ALL_USERS, search, search,
+                             request.getSortField(), request.getSortType()))) {
+
             System.out.println(preparedStatement);
 
             ResultSet rs = preparedStatement.executeQuery();
