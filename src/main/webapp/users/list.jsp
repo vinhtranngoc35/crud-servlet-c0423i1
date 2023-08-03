@@ -129,7 +129,7 @@
         <c:forEach items="${users}" var="user" varStatus="loop">
             <tr>
                 <td>
-                        ${loop.index + 1}
+                        ${user.id}
                 </td>
                 <td>
                         ${user.name}
@@ -165,6 +165,44 @@
         </tbody>
 
     </table>
+
+    <div class="d-flex justify-content-end">
+        <nav aria-label="...">
+            <ul class="pagination">
+                <li class="page-item
+                    <c:if test="${pageable.page == 1}"> disabled </c:if> ">
+                    <a class="page-link" <c:if test="${pageable.page > 1}">
+                        href="/users?page=${pageable.page - 1}&search=${pageable.search}&sortType=${pageable.sortType}&sortField=${pageable.sortField}" </c:if>
+                    >Previous</a>
+                </li>
+<%--                neu page > 3   > 0--%>
+                <c:forEach begin="1" end="${pageable.totalPage}" var="num">
+                    <c:if test="${pageable.page == num}">
+                        <li class="page-item active" aria-current="page">
+                            <a class="page-link"
+                               href="/users?page=${num}&search=${pageable.search}&sortType=${pageable.sortType}&sortField=${pageable.sortField}"
+                            >${num}</a>
+                        </li>
+                    </c:if>
+                    <c:if test="${pageable.page != num}">
+                        <li class="page-item">
+                            <a class="page-link"
+                               href="/users?page=${num}&search=${pageable.search}&sortType=${pageable.sortType}&sortField=${pageable.sortField}"
+                            >${num}</a>
+                        </li>
+                    </c:if>
+                </c:forEach>
+
+                <li class="page-item
+                    <c:if test="${pageable.page == pageable.totalPage}"> disabled </c:if> "
+                >
+                    <a class="page-link" <c:if test="${pageable.page < pageable.totalPage}">
+                        href="/users?page=${pageable.page + 1}&search=${pageable.search}&sortType=${pageable.sortType}&sortField=${pageable.sortField}" </c:if>
+                    >Next</a>
+                </li>
+            </ul>
+        </nav>
+    </div>
 </div>
 
 

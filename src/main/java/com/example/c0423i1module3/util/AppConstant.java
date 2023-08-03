@@ -15,4 +15,6 @@ public class AppConstant {
     public static String ID_NOT_FOUND = "Id of %s not found";
 
     public static String MESSAGE_EDIT_SUCCESS = "Edited";
+
+    public static int[] LIMIT_ROWS = {5,10,20};
 }

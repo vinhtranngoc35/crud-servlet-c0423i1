@@ -98,10 +98,13 @@ public class UserController extends HttpServlet {
 
     private void showList(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
 
+        //page, Integer totalOfPage, Integer limit, Integer totalPage
         PageableRequest request = new PageableRequest(
                 req.getParameter("search"),
                 req.getParameter("sortField"),
-                ESortType.valueOf(AppUtil.getParameterWithDefaultValue(req,"sortType", ESortType.DESC).toString())
+                ESortType.valueOf(AppUtil.getParameterWithDefaultValue(req,"sortType", ESortType.DESC).toString()),
+                Integer.parseInt(AppUtil.getParameterWithDefaultValue(req, "page", "1").toString()),
+                Integer.parseInt(AppUtil.getParameterWithDefaultValue(req, "limit", "2").toString())
         ); //tao doi tuong pageable voi parametter search
 
         req.setAttribute("pageable", request);
@@ -140,7 +143,6 @@ public class UserController extends HttpServlet {
 
     private User getValidUser(HttpServletRequest req, HttpServletResponse resp) throws IOException, ServletException {
         User user = (User) AppUtil.getObjectWithValidation(req, User.class,  validators); //
-        user.setRole(new Role(Long.valueOf(req.getParameter("role_id"))));
         if(errors.size() > 0){
             req.setAttribute("userJSON", new ObjectMapper().writeValueAsString(user)); //hiểu dòng đơn giản là muốn gửi data qua JS thì phải xài thằng này  new ObjectMapper().writeValueAsString(user).
             req.setAttribute("rolesJSON", new ObjectMapper().writeValueAsString(RoleService.getRoles()));
