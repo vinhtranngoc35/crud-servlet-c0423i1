@@ -7,7 +7,9 @@ import javax.servlet.http.HttpServletRequest;
 import java.lang.reflect.Field;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.HashMap;
 import java.util.Map;
 
 public class AppUtil {
@@ -91,7 +93,6 @@ public class AppUtil {
                     var fieldType = field.getType(); // class Name
                     var objectChild = fieldType.newInstance(); // tạo 1 object
                     field.set(object, objectChild);
-//role_id
                     Field fieldChild = fieldType.getDeclaredField(fields[1]); // field object con
                     fieldChild.setAccessible(true);
                     var value = mapper.readValue(paramValue,fieldChild.getType());
@@ -228,4 +229,46 @@ public class AppUtil {
     public static String camelCaseToSnakeCase(String camelCase) {
         return camelCase.replaceAll("(.)(\\p{Upper})", "$1_$2").toLowerCase();
     }
+    public static <T> T getObjectFromResultSet(ResultSet rs, Class<T> clazz) {
+        T object;
+        try {
+            object = clazz.getDeclaredConstructor().newInstance();
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+        Field[] fields = clazz.getDeclaredFields();
+        for (Field field : fields) {
+            try {
+                String fieldName = field.getName();
+                if (fieldName.equals("serialVersionUID")) {
+                    continue;
+                }
+                field.setAccessible(true);
+                Class<?> fieldType = field.getType();
+                if(!fieldType.isEnum() && fieldType.getPackage().getName().contains("model")){
+                    var objectChild = fieldType.getDeclaredConstructor().newInstance();
+                    for (var fieldChild: fieldType.getDeclaredFields()) {
+                        String fieldChildName = fieldChild.getName();
+                        fieldChild.setAccessible(true);
+                        String paramValue = mapper
+                                .writeValueAsString(rs.getObject
+                                        (camelCaseToSnakeCase(fieldName)+ "-" +camelCaseToSnakeCase(fieldChildName)));
+                        Object value = mapper.readValue(paramValue, fieldChild.getType());
+                        fieldChild.set(objectChild, value);
+                    }
+                    field.set(object, objectChild);
+                    continue;
+                }
+
+                String paramValue = mapper.writeValueAsString(rs.getObject(camelCaseToSnakeCase(fieldName)));
+                Object value = mapper.readValue(paramValue, fieldType);
+                field.set(object, value);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+        return object;
+    }
+
 }

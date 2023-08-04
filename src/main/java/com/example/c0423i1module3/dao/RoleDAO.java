@@ -11,10 +11,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class RoleDAO extends DatabaseConnection{
-    private final String SELECT_ROLES = "SELECT * FROM `roles`";
 
     public List<Role> getRoles(){
         List<Role> roles = new ArrayList<>();
+        String SELECT_ROLES = "SELECT * FROM `roles`";
         try (Connection connection = getConnection();
 
              // Step 2: truyền câu lênh mình muốn chạy nằm ở trong này (SELECT_USERS)

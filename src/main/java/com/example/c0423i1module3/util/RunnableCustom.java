@@ -6,7 +6,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 
-public  abstract  class RunnableCustom implements Runnable  {
+public abstract class RunnableCustom implements Runnable  {
     protected String  fieldName;
     protected String value ;
     protected String message;
