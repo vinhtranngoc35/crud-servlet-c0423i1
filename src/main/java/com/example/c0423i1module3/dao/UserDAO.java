@@ -13,7 +13,7 @@ import java.util.List;
 import java.util.Optional;
 
 public class UserDAO extends DatabaseConnection {
-    private final String SELECT_ALL_USERS = "SELECT u.*,r.name `role-name`, r.id as `role-id`  FROM `users` u LEFT JOIN " +
+    private final String SELECT_ALL_USERS = "SELECT u.*,r.name `role.name`, r.id as `role.id`  FROM `users` u LEFT JOIN " +
             "`roles` r on u.role_id = r.id  WHERE u.`name` like '%s' OR u.`phone` LIKE '%s' Order BY %s %s LIMIT %s OFFSET %s";
     private final String SELECT_TOTAL_RECORDS = "SELECT COUNT(1) as cnt  FROM `users` u LEFT JOIN " +
             "`roles` r on u.role_id = r.id  WHERE u.`name` like '%s' OR u.`phone` LIKE '%s'";
@@ -125,7 +125,7 @@ public class UserDAO extends DatabaseConnection {
 
             ResultSet rs = preparedStatement.executeQuery();
             if (rs.next()) {
-                return Optional.of(getUserByResultSet(rs));
+                return Optional.of(AppUtil.getObjectFromResultSet(rs, User.class));
             }
         } catch (SQLException e) {
             throw new RuntimeException(e);

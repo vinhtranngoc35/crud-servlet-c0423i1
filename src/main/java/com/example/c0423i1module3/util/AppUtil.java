@@ -244,6 +244,7 @@ public class AppUtil {
                 if (fieldName.equals("serialVersionUID")) {
                     continue;
                 }
+
                 field.setAccessible(true);
                 Class<?> fieldType = field.getType();
                 if(!fieldType.isEnum() && fieldType.getPackage().getName().contains("model")){
@@ -253,7 +254,7 @@ public class AppUtil {
                         fieldChild.setAccessible(true);
                         String paramValue = mapper
                                 .writeValueAsString(rs.getObject
-                                        (camelCaseToSnakeCase(fieldName)+ "-" +camelCaseToSnakeCase(fieldChildName)));
+                                        (camelCaseToSnakeCase(fieldName)+ "." +camelCaseToSnakeCase(fieldChildName)));
                         Object value = mapper.readValue(paramValue, fieldChild.getType());
                         fieldChild.set(objectChild, value);
                     }
