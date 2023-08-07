@@ -76,16 +76,8 @@ public class UserDAO extends DatabaseConnection {
 
              // Step 2: truyền câu lênh mình muốn chạy nằm ở trong này (SELECT_USERS)
              PreparedStatement preparedStatement = connection
-                     .prepareStatement(INSERT_USERS)) {
+                     .prepareStatement(AppUtil.buildInsertSql("users", user))) {
             System.out.println(preparedStatement);
-            preparedStatement.setString(1,user.getName());
-            preparedStatement.setString(2,user.getPhone());
-            preparedStatement.setString(3,user.getEmail());
-            preparedStatement.setString(4,user.getAvatar());
-            preparedStatement.setString(5,user.getGender().toString());
-            preparedStatement.setString(6,user.getDob());
-            preparedStatement.setString(7,user.getCoverPicture());
-            preparedStatement.setLong(8, user.getRole().getId());
             preparedStatement.executeUpdate();
         } catch (SQLException e) {
             throw new RuntimeException(e);
@@ -97,16 +89,8 @@ public class UserDAO extends DatabaseConnection {
 
              // Step 2: truyền câu lênh mình muốn chạy nằm ở trong này (SELECT_USERS)
              PreparedStatement preparedStatement = connection
-                     .prepareStatement(UPDATE_USER)) {
+                     .prepareStatement(AppUtil.buildUpdateSql("users", user))) {
             System.out.println(preparedStatement);
-            preparedStatement.setString(1,user.getName());
-            preparedStatement.setString(2,user.getPhone());
-            preparedStatement.setString(3,user.getAvatar());
-            preparedStatement.setString(4,user.getGender().toString());
-            preparedStatement.setString(5,user.getDob());
-            preparedStatement.setString(6,user.getCoverPicture());
-            preparedStatement.setLong(7, user.getRole().getId());
-            preparedStatement.setLong(8,user.getId());
 
             preparedStatement.executeUpdate();
         } catch (SQLException e) {

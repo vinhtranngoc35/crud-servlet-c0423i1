@@ -9,7 +9,9 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class AppUtil {
@@ -128,94 +130,92 @@ public class AppUtil {
         if(value == null)return valueDefault;
         return value;
     }
-    public static <T> void saveObjectToDatabase(Connection connection, String tableName, T object, String... excludedFields) throws SQLException {
-        String sql;
-        Field idField;
-        try {
-            idField = object.getClass().getDeclaredField("id");
-            idField.setAccessible(true);
-            Long idValue = (Long) idField.get(object);
-            if (idValue != null) {
-                sql = buildUpdateSql(tableName, object, excludedFields);
-            } else {
-                sql = buildInsertSql(tableName, object, excludedFields);
-            }
-        } catch (NoSuchFieldException | IllegalAccessException e) {
-            e.printStackTrace();
-            return;
-        }
-        try (PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
-            int parameterIndex = 1;
+
+    public static String buildInsertSql(String tableName, Object object) {
+        List<Object> arrayValue = new ArrayList<>();
+        StringBuilder sql = new StringBuilder("INSERT INTO " + tableName + " (");
+        try{
+            Object value = null;
             Field[] fields = object.getClass().getDeclaredFields();
-            for (Field field : fields) {
+            for (int i = 0; i < fields.length; i++) {
+                Field field = fields[i];
                 String fieldName = field.getName();
-                if (fieldName.equals("serialVersionUID") || isExcluded(fieldName, excludedFields)) {
+                field.setAccessible(true);
+                value = field.get(object);
+
+                if (fieldName.equals("serialVersionUID") || fieldName.equals("id") || value == null) {
                     continue;
                 }
-                field.setAccessible(true);
-                Class<?> fieldType = field.getType();
-                try {
-                    Object value = field.get(object);
-                    preparedStatement.setObject(parameterIndex, value);
-                    parameterIndex++;
-                } catch (IllegalAccessException e) {
-                    e.printStackTrace();
+
+                var sqlAppendField = new StringBuilder(camelCaseToSnakeCase(fieldName));
+
+                if(!field.getType().isEnum() && field.getType().getName().contains("model")){
+                    sqlAppendField = new StringBuilder(camelCaseToSnakeCase(fieldName) + "_id");
+                    var objectChild = field.get(object);
+                    var fieldId =objectChild.getClass().getDeclaredField("id");
+                    fieldId.setAccessible(true);
+                    value = fieldId.get(objectChild);
+                }
+                arrayValue.add(value);
+                sql.append(sqlAppendField);
+                if (i < fields.length - 1) {
+                    sql.append(",");
                 }
             }
-            if (sql.contains("UPDATE")) {
-                // Set the id value for the WHERE clause in the UPDATE statement
-                preparedStatement.setLong(parameterIndex, (Long) idField.get(object));
+            sql.append(") VALUES (");
+            for (int i = 0; i < arrayValue.size(); i++) {
+                sql.append("'").append(arrayValue.get(i)).append("'");
+                if (i < arrayValue.size() - 1) {
+                    sql.append(",");
+                }
             }
-            preparedStatement.executeUpdate();
-        } catch (Exception e) {
-            e.printStackTrace();
+            sql.append(")");
+        }catch (Exception e){
+            System.out.println(e.getMessage());
         }
-    }
-    private static String buildInsertSql(String tableName, Object object, String... excludedFields) {
-        StringBuilder sql = new StringBuilder("INSERT INTO " + tableName + " (");
-        Field[] fields = object.getClass().getDeclaredFields();
-        for (int i = 0; i < fields.length; i++) {
-            Field field = fields[i];
-            String fieldName = field.getName();
-            if (fieldName.equals("serialVersionUID") || fieldName.equals("id") || isExcluded(fieldName, excludedFields)) {
-                continue;
-            }
-            sql.append(camelCaseToSnakeCase(fieldName));
-            if (i < fields.length - 1) {
-                sql.append(",");
-            }
-        }
-        sql.append(") VALUES (");
-        for (int i = 0; i < fields.length; i++) {
-            Field field = fields[i];
-            String fieldName = field.getName();
-            if (fieldName.equals("serialVersionUID") || fieldName.equals("id") || isExcluded(fieldName, excludedFields)) {
-                continue;
-            }
-            sql.append("?");
-            if (i < fields.length - 1) {
-                sql.append(",");
-            }
-        }
-        sql.append(")");
+
         return sql.toString();
     }
-    private static String buildUpdateSql(String tableName, Object object, String... excludedFields) {
+    public static String buildUpdateSql(String tableName, Object object) {
         StringBuilder sql = new StringBuilder("UPDATE " + tableName + " SET ");
-        Field[] fields = object.getClass().getDeclaredFields();
-        for (int i = 0; i < fields.length; i++) {
-            Field field = fields[i];
-            String fieldName = field.getName();
+        Object id = 0L;
+        try {
+            Field[] fields = object.getClass().getDeclaredFields();
+            for (int i = 0; i < fields.length; i++) {
+                Field field = fields[i];
+                field.setAccessible(true);
+                String fieldName = field.getName();
+                Object value = field.get(object);
+                if(fieldName.equals("id")){
+                    id = value;
+                }
+                if (fieldName.equals("serialVersionUID")
+                        || fieldName.equals("id")
+                        || value == null) {
+                    continue;
+                }
+                if(!field.getType().isEnum() && field.getType().getName().contains("model")){
 
-            if (fieldName.equals("serialVersionUID") || fieldName.equals("id") || isExcluded(fieldName, excludedFields)) {
-                continue;
-            }
-            sql.append(camelCaseToSnakeCase(fieldName)).append("=?");
-            if (i < fields.length - 1) {
+                    Field fld = object.getClass().getDeclaredField(fieldName);
+                    fld.setAccessible(true);
+                    var objectChild = fld.get(object);
+                    var fieldIdChild = objectChild.getClass().getDeclaredField("id");
+                    fieldIdChild.setAccessible(true);
+                    var idChild = fieldIdChild.get(objectChild);
+                    sql.append(camelCaseToSnakeCase(fieldName + "_id")).append("='").append(idChild).append("'");
+                    sql.append(",");
+                    continue;
+                }
+                sql.append(camelCaseToSnakeCase(fieldName)).append("='").append(value).append("'");
+
                 sql.append(",");
             }
+            sql.deleteCharAt(sql.length() -1);
+            sql.append(" WHERE (id = '").append(id).append("')");
+        }catch (Exception e){
+            System.out.println(e.getMessage());
         }
-        sql.append(" WHERE (id = ?)");
+
         return sql.toString();
     }
     private static boolean isExcluded(String fieldName, String[] excludedFields) {
