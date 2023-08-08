@@ -30,7 +30,6 @@ public class User {
     private String coverPicture;
 
     private Role role;
-
     public User(Long id, String name, String phone, String email, String avatar, EGender gender, Date dob, String coverPicture, Role role) {
         this.id = id;
         this.name = name;
@@ -116,4 +115,5 @@ public class User {
     public void setRole(Role role) {
         this.role = role;
     }
+
 }

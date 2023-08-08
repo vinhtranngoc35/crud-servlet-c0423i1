@@ -57,7 +57,7 @@ function formSelect(props, index) {
             </div>`
 }
 const onFocus = (index) => {
-    const inputsForm = document.querySelectorAll('#formBody .input-custom')
+    const inputsForm = document.querySelectorAll('.input-custom')
     inputsForm[index].setAttribute("focused", "true");
 }
 

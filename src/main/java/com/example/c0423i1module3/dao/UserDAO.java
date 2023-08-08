@@ -17,10 +17,7 @@ public class UserDAO extends DatabaseConnection {
             "`roles` r on u.role_id = r.id  WHERE u.`name` like '%s' OR u.`phone` LIKE '%s' Order BY %s %s LIMIT %s OFFSET %s";
     private final String SELECT_TOTAL_RECORDS = "SELECT COUNT(1) as cnt  FROM `users` u LEFT JOIN " +
             "`roles` r on u.role_id = r.id  WHERE u.`name` like '%s' OR u.`phone` LIKE '%s'";
-    private final String UPDATE_USER = "UPDATE `users` SET `name` = ?, `phone` = ?, `avatar` = ?, `gender` = ?, `dob` = ?, `cover_picture` = ?, `role_id` = ? WHERE (`id` = ?);";
 
-    private final String INSERT_USERS = "INSERT INTO `users` (`name`, `phone`, `email`, `avatar`, `gender`, `dob`, `cover_picture`, `role_id`) \n" +
-            "VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
     private final String FIND_BY_ID = "SELECT u.*,r.name role_name  FROM " +
             "`users` u LEFT JOIN `roles` r on u.role_id = r.id WHERE u.`id` = ?"; // show Edit
 

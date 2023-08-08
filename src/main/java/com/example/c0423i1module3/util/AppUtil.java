@@ -218,13 +218,8 @@ public class AppUtil {
 
         return sql.toString();
     }
-    private static boolean isExcluded(String fieldName, String[] excludedFields) {
-        for (String excludedField : excludedFields) {
-            if (excludedField.equals(fieldName)) {
-                return true;
-            }
-        }
-        return false;
+    private static String buildSQLDelete(String table, Object id) {
+        return "DELETE FROM`" + table + "`WHERE (`id` ='" + id + "')";
     }
     public static String camelCaseToSnakeCase(String camelCase) {
         return camelCase.replaceAll("(.)(\\p{Upper})", "$1_$2").toLowerCase();
