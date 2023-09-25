@@ -4,19 +4,21 @@ function formInput(props, index) {
         return formSelect(props, index);
     }
     let pattern = '';
-    if(props.pattern){
+    if (props.pattern) {
         pattern = 'pattern="' + props.pattern + '"';
     }
     let disable = '';
-    if(props.disable){
+    if (props.disable) {
         disable = 'disabled';
     }
+
     return `<div class="${props.classDiv}">
                 <label>${props.label}</label>
                     <input class="input-custom form-control"
                     type="${props.type || 'text'}"
                     name="${props.name}"
                     onblur="onFocus(${index})" 
+                    onchange="validateCustom(${this.value}, ${props}, ${index})"
                     ${pattern}
                     ${disable}
                     value="${props.value}"
@@ -24,21 +26,32 @@ function formInput(props, index) {
                 <span class="error">${props.message}</span>
             </div>`
 }
+function validateCustom  (value ,props, index) {
+    console.log(value)
+    if(props.validator){
+        let result = props.validator(value);
+        const inputsForm = document.querySelectorAll('.input-custom')
+        if(!result){
+            inputsForm[index].setAttribute('invalid', 'true');
+        }
+    }
+}
+
 function formSelect(props, index) {
     let optionsStr = "";
     props.options.forEach(e => {
-        if(props.value === e.value){
+        if (props.value === e.value) {
             optionsStr += `<option value="${e.value}" selected>${e.name}</option>`;
-        }else {
+        } else {
             optionsStr += `<option value="${e.value}" >${e.name}</option>`;
         }
     })
     const optionSelected = props.options.find(e => e.value === props.value);
-    if(props.disable){
+    if (props.disable) {
         optionsStr = `<option selected>${optionSelected.name}</option>`;
     }
     let disable = '';
-    if(props.disable){
+    if (props.disable) {
         disable = 'disabled';
     }
     return `<div class="${props.classDiv}">
@@ -46,6 +59,7 @@ function formSelect(props, index) {
                     <select class="input-custom form-control"
                     type="${props.type || 'text'}" name="${props.name}"
                     onblur="onFocus(${index})"
+                    
                     ${disable}
                     value="${props.value}"
                     ${props.require ? 'required' : ''}>
@@ -56,6 +70,7 @@ function formSelect(props, index) {
                     <span class="error">${props.message}</span>
             </div>`
 }
+
 const onFocus = (index) => {
     const inputsForm = document.querySelectorAll('.input-custom')
     inputsForm[index].setAttribute("focused", "true");

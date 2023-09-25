@@ -13,15 +13,6 @@ import java.util.List;
 import java.util.Optional;
 
 public class UserDAO extends DatabaseConnection {
-    private final String SELECT_ALL_USERS = "SELECT u.*,r.name `role.name`, r.id as `role.id`  FROM `users` u LEFT JOIN " +
-            "`roles` r on u.role_id = r.id  WHERE u.`name` like '%s' OR u.`phone` LIKE '%s' Order BY %s %s LIMIT %s OFFSET %s";
-    private final String SELECT_TOTAL_RECORDS = "SELECT COUNT(1) as cnt  FROM `users` u LEFT JOIN " +
-            "`roles` r on u.role_id = r.id  WHERE u.`name` like '%s' OR u.`phone` LIKE '%s'";
-
-    private final String FIND_BY_ID = "SELECT u.*,r.name role_name  FROM " +
-            "`users` u LEFT JOIN `roles` r on u.role_id = r.id WHERE u.`id` = ?"; // show Edit
-
-    private final String DELETE_BY_ID = "DELETE FROM `users` WHERE (`id` = ?)";
 
 
     public List<User> findAll(PageableRequest request) {
@@ -39,6 +30,8 @@ public class UserDAO extends DatabaseConnection {
             search = "%" + search + "%";
         }
         var offset = (request.getPage() - 1) * request.getLimit();
+        String SELECT_ALL_USERS = "SELECT u.*,r.name `role.name`, r.id as `role.id`  FROM `users` u LEFT JOIN " +
+                "`roles` r on u.role_id = r.id  WHERE u.`name` like '%s' OR u.`phone` LIKE '%s' Order BY %s %s LIMIT %s OFFSET %s";
         try (Connection connection = getConnection();
 
              // Step 2: truyền câu lênh mình muốn chạy nằm ở trong này (SELECT_USERS)
@@ -54,6 +47,8 @@ public class UserDAO extends DatabaseConnection {
             while (rs.next()) {
                 users.add(AppUtil.getObjectFromResultSet(rs, User.class));
             }
+            String SELECT_TOTAL_RECORDS = "SELECT COUNT(1) as cnt  FROM `users` u LEFT JOIN " +
+                    "`roles` r on u.role_id = r.id  WHERE u.`name` like '%s' OR u.`phone` LIKE '%s'";
             PreparedStatement statementTotalRecords = connection
                     .prepareStatement(String.format(SELECT_TOTAL_RECORDS, search, search));
             ResultSet resultSetOfTotalRecords = statementTotalRecords.executeQuery();
@@ -96,6 +91,9 @@ public class UserDAO extends DatabaseConnection {
     }
 
     public Optional<User> findById(Long id) {
+        // show Edit
+        String FIND_BY_ID = "SELECT u.*,r.name role_name  FROM " +
+                "`users` u LEFT JOIN `roles` r on u.role_id = r.id WHERE u.`id` = ?";
         try (Connection connection = getConnection();
 
              // Step 2: truyền câu lênh mình muốn chạy nằm ở trong này (SELECT_USERS)
@@ -106,7 +104,7 @@ public class UserDAO extends DatabaseConnection {
 
             ResultSet rs = preparedStatement.executeQuery();
             if (rs.next()) {
-                return Optional.of(AppUtil.getObjectFromResultSet(rs, User.class));
+                return Optional.ofNullable(AppUtil.getObjectFromResultSet(rs, User.class));
             }
         } catch (SQLException e) {
             throw new RuntimeException(e);
@@ -115,8 +113,9 @@ public class UserDAO extends DatabaseConnection {
     }
 
     public void deleteById(Long id) {
+        String DELETE_BY_ID = "DELETE FROM `users` WHERE (`id` = ?)";
         try (Connection connection = getConnection();
-
+    
              // Step 2: truyền câu lênh mình muốn chạy nằm ở trong này (SELECT_USERS)
              PreparedStatement preparedStatement = connection
                      .prepareStatement(DELETE_BY_ID)) {
@@ -128,20 +127,5 @@ public class UserDAO extends DatabaseConnection {
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
-    }
-
-    private User getUserByResultSet(ResultSet rs) throws SQLException {
-        Long id = rs.getLong("id");
-        String name = rs.getString("name");
-        String phone = rs.getString("phone");
-        String email = rs.getString("email");
-        String avatar = rs.getString("avatar");
-        String dob = rs.getString("dob");
-        String coverPicture = rs.getString("cover_picture");
-        String gender = rs.getString("gender");
-        String roleName = rs.getString("role_name");
-        Long roleId = rs.getLong("role_id");
-        Role role = new Role(roleId, roleName);
-        return new User(id, name, phone,email, avatar, EGender.valueOf(gender), Date.valueOf(dob), coverPicture, role);
     }
 }

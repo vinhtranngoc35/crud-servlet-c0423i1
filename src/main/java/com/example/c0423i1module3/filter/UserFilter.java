@@ -13,15 +13,15 @@ public class UserFilter implements Filter {
 
     @Override
     public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain) throws IOException, ServletException {
-        var session = ((HttpServletRequest)servletRequest).getSession();
-        if(session.getAttribute("login") == null){
-            ((HttpServletResponse)servletResponse).sendRedirect("/auths");
-            return;
-        }
-        if(!((Login)session.getAttribute("login")).getRole().equals(ERole.USER)){
-            ((HttpServletResponse)servletResponse).sendRedirect("/auths?action=403");
-            return;
-        }
+//        var session = ((HttpServletRequest)servletRequest).getSession();
+//        if(session.getAttribute("login") == null){
+//            ((HttpServletResponse)servletResponse).sendRedirect("/auths");
+//            return;
+//        }
+//        if(!((Login)session.getAttribute("login")).getRole().equals(ERole.USER)){
+//            ((HttpServletResponse)servletResponse).sendRedirect("/auths?action=403");
+//            return;
+//        }
         filterChain.doFilter(servletRequest, servletResponse);
     }
 }
